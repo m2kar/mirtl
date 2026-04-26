@@ -20,4 +20,5 @@ PATH_TO_SV_TB_TEMPLATE_PROBES = 'tb_icarus_probes.sv.template'
 PATH_TO_CXXRTL_TB_TEMPLATE = 'template_tb_cxxrtl_base.cc'
 TEMPLATE_MODULE_NAME = 'template_module.sv'
 TEMPLATE_MODULE_NAME_PROBES = 'template_module_probes.sv'
-PATH_TO_YOSYS = os.environ.get('MIRTL_YOSYS', os.path.join('/', 'mirtl-yosys', 'yosys'))
+_DEFAULT_YOSYS = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'yosys', 'yosys'))
+PATH_TO_YOSYS = os.environ.get('MIRTL_YOSYS', _DEFAULT_YOSYS)
