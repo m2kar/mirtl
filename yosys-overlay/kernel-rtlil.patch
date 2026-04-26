@@ -1,0 +1,24 @@
+diff --git a/kernel/rtlil.cc b/kernel/rtlil.cc
+index ffbd4b3ff..4205a4b32 100644
+--- a/kernel/rtlil.cc
++++ b/kernel/rtlil.cc
+@@ -2108,6 +2108,7 @@ std::vector<RTLIL::Cell*> RTLIL::Module::selected_cells() const
+ 
+ void RTLIL::Module::add(RTLIL::Wire *wire)
+ {
++	// log("Wire name: %s , refcount_wires_: %d , count_id(wire->name): %d\n", wire->name.c_str(), refcount_wires_, count_id(wire->name));
+ 	log_assert(!wire->name.empty());
+ 	log_assert(count_id(wire->name) == 0);
+ 	log_assert(refcount_wires_ == 0);
+@@ -4502,6 +4503,11 @@ void RTLIL::SigSpec::check(Module *mod) const
+ 				log_assert(chunk.offset == 0);
+ 				log_assert(chunk.data.size() == (size_t)chunk.width);
+ 			} else {
++				// log("\n");
++				// log("Wire addr: %p\n", chunk.wire);
++				// log("Wire name: %s\n", log_id(chunk.wire->name));
++				// // log("    chunk %d/%d: %s[%d:%d]\n", int(i), int(chunks_.size()), log_id(chunk.wire), chunk.offset + chunk.width - 1, chunk.offset);
++				// log("    chunk offset: %d, width: %d, wire width: %d\n", chunk.offset, chunk.width, chunk.wire->width);
+ 				if (i > 0 && chunks_[i-1].wire == chunk.wire)
+ 					log_assert(chunk.offset != chunks_[i-1].offset + chunks_[i-1].width);
+ 				log_assert(chunk.offset >= 0);

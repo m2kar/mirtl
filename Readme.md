@@ -14,17 +14,23 @@ docker pull docker.io/ethcomsec/mirtl:mirtl-artifacts
 
 To build the docker image yourself:
 
+The MiRTL Yosys is now reproduced from upstream `YosysHQ/yosys` (pinned to commit
+`3c3788ee2`, i.e. Yosys 0.37+29) plus a small TransFuzz overlay (a no-op debug
+patch on `kernel/rtlil.cc` and the new `passes/simufuzz/` pass). The original
+`mirtl-yosys.tgz` archive on Berkeley Box is no longer required.
+
 ```
+git submodule update --init --recursive   # pulls yosys/ at the pinned commit
 cd docker
-mkdir mirtl-yosys
+bash rebuild-push.sh
 ```
 
-Download the mirtl-yosys archive from here https://berkeley.box.com/s/lv2jg9fzvwdlimo43i9naks4c1d5u3oh and put it into the ./docker/mirtl-yosys folder just created.
-
-Then run the following command:
+If you want to build the Yosys binary outside Docker (e.g. for local
+development), run:
 
 ```
-bash rebuild_push.sh
+JOBS=$(nproc) bash scripts/build-yosys.sh
+sudo make -C yosys install   # optional, system-wide install
 ```
 
 To differentially fuzz simulators run the command below after selecting the desired `FirstSimulator` and `SecondSimulator` in the same Python script.

@@ -25,8 +25,16 @@ RUN apt-get update && apt-get install -y curl gnupg apt-utils && \
 # Install the MiRTL Yosys
 ############################
 
-COPY mirtl-yosys/mirtl-yosys.tgz /mirtl-yosys.tgz
-RUN bash -c "tar zxf mirtl-yosys.tgz && cd /mirtl-yosys && make -j 220 && make install" 
+# Build MiRTL Yosys from upstream YosysHQ/yosys (pinned to 3c3788ee2,
+# i.e. Yosys 0.37+29) plus the TransFuzz overlay. The submodule must be
+# checked out on the host first via:  git submodule update --init --recursive
+COPY yosys /mirtl-yosys
+COPY yosys-overlay /yosys-overlay
+COPY scripts/build-yosys.sh /build-yosys.sh
+RUN bash -c "git -C /mirtl-yosys apply --whitespace=nowarn /yosys-overlay/kernel-rtlil.patch && \
+             mkdir -p /mirtl-yosys/passes/simufuzz && \
+             cp /yosys-overlay/passes/simufuzz/* /mirtl-yosys/passes/simufuzz/ && \
+             make -C /mirtl-yosys -j 220 && make -C /mirtl-yosys install"
 
 ############################
 # Install the default Verilator 5.022
