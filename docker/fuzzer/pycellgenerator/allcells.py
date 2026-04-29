@@ -287,43 +287,14 @@ CELL_PARAMS = {
     ),
 
     # Flip-flops
-    'adff': (
-        None, # arst_value, will be limited to 32 bits for now in reality
-        1, # clk_polarity
-        1, # arst_polarity
-    ),
-    'adffe': (
-        None, # arst_value, will be limited to 32 bits for now in reality
-        1, # clk_polarity
-        1, # en_polarity
-        1, # arst_polarity
-    ),
-    'aldff': (
-        1, # clk_polarity
-        1, # aload_polarity
-    ),
-    'aldffe': (
-        1, # clk_polarity
-        1, # en_polarity
-        1, # aload_polarity
-    ),
+    # adff/adffe/aldff/aldffe: async-reset/load — arcilator unsupported
+    # dffsr/dffsre: set/reset — arcilator: llhd.constant_time legalization failure
     'dff': (
         1, # clk_polarity
     ),
     'dffe': (
         1, # clk_polarity
         1, # en_polarity
-    ),
-    'dffsr': (
-        1, # clk_polarity
-        1, # set_polarity
-        1, # clr_polarity
-    ),
-    'dffsre': (
-        1, # clk_polarity
-        1, # en_polarity
-        1, # set_polarity
-        1, # clr_polarity
     ),
     'ff': tuple(),
     'sdff': (
@@ -344,20 +315,7 @@ CELL_PARAMS = {
         1, # srst_polarity
     ),
 
-    # Latches
-    'adlatch': (
-        None, # arst_value, will be limited to 32 bits for now in reality
-        1, # en_polarity
-        1, # arst_polarity
-    ),
-    'dlatch': (
-        1, # en_polarity
-    ),
-    'dlatchsr': (
-        1, # en_polarity
-        1, # set_polarity
-        1, # clr_polarity
-    ),
+    # Latches: all disabled — arcilator: llhd.constant_time legalization failure
 
     # The gates like '_DLATCHSR_NNN_' take no parameter.
 }
@@ -471,18 +429,18 @@ ALL_CELL_PORTS_STATEFUL = {
     # '_SDFF_PN1_':    (),
     # '_SDFF_PP0_':    (),
     # '_SDFF_PP1_':    (('A', True, None), ('B', True, None), ('Y', False, 1)),
-    'adff':   (('CLK', True, 1), ('ARST', True, 1), ('D', True, None), ('Q', False, None)),
-    # 'adffe':  (('CLK', True, 1), ('EN', True, 1), ('ARST', True, 1), ('D', True, None), ('Q', False, None)),
-    # # 'aldff':  (('CLK', True, 1), ('ALOAD', True, 1), ('D', True, None), ('Q', False, None), ('AD', True, None)),
-    # # 'aldffe': (('CLK', True, 1), ('EN', True, 1), ('ALOAD', True, 1), ('D', True, None), ('Q', False, None), ('AD', True, None)),
-    # # 'dff':    (('CLK', True, 1), ('D', True, None), ('Q', False, None)),
-    # # 'dffe':   (('CLK', True, 1), ('EN', True, 1), ('D', True, None), ('Q', False, None)),
-    # 'dffsr':  (('CLK', True, 1), ('SET', True, None), ('CLR', True, None), ('D', True, None), ('Q', False, None)),
-    # 'dffsre': (('CLK', True, 1), ('EN', True, 1), ('SET', True, None), ('CLR', True, None), ('D', True, None), ('Q', False, None)),
+    # 'adff':   async-reset FF — arcilator: only synchronous resets supported
+    # 'adffe':  async-reset FF with enable — arcilator unsupported
+    # 'aldff':  async-load FF — arcilator unsupported
+    # 'aldffe': async-load FF with enable — arcilator unsupported
+    # 'dffsr':  FF with set/reset — arcilator: llhd.constant_time legalization failure
+    # 'dffsre': FF with enable+set/reset — arcilator unsupported
+    'dff':    (('CLK', True, 1), ('D', True, None), ('Q', False, None)),
+    'dffe':   (('CLK', True, 1), ('EN', True, 1), ('D', True, None), ('Q', False, None)),
     # # 'ff':     (('D', True, None), ('Q', False, None)),
-    # 'sdff':   (('CLK', True, 1), ('SRST', True, 1), ('D', True, None), ('Q', False, None)),
-    # 'sdffce': (('CLK', True, 1), ('SRST', True, 1), ('EN', True, 1), ('D', True, None), ('Q', False, None)),
-    # 'sdffe':  (('CLK', True, 1), ('EN', True, 1), ('SRST', True, 1), ('D', True, None), ('Q', False, None)),
+    'sdff':   (('CLK', True, 1), ('SRST', True, 1), ('D', True, None), ('Q', False, None)),
+    'sdffce': (('CLK', True, 1), ('SRST', True, 1), ('EN', True, 1), ('D', True, None), ('Q', False, None)),
+    'sdffe':  (('CLK', True, 1), ('EN', True, 1), ('SRST', True, 1), ('D', True, None), ('Q', False, None)),
 
     # Latches
     # '_DLATCHSR_NNN_':  (('E', True, 1), ('S', True, 1), ('R', True, 1), ('D', True, 1), ('Q', False, 1)),
@@ -503,22 +461,16 @@ ALL_CELL_PORTS_STATEFUL = {
     # '_DLATCH_PP0_':    (('E', True, 1), ('R', True, 1), ('D', True, 1), ('Q', False, 1)),
     # '_DLATCH_PP1_':    (('E', True, 1), ('R', True, 1), ('D', True, 1), ('Q', False, 1)),
     # '_DLATCH_P_':      (('E', True, 1), ('D', True, 1), ('Q', False, 1)),
-    'adlatch':  (('EN', True, 1), ('ARST', True, 1), ('D', True, None), ('Q', False, None)),
-    # # 'dlatch':   (('EN', True, 1), ('D', True, None), ('Q', False, None)),
-    # 'dlatchsr': (('EN', True, 1), ('SET', True, None), ('CLR', True, None), ('D', True, None), ('Q', False, None))
+    # 'adlatch':  async-reset latch — arcilator: llhd.constant_time legalization failure
+    # 'dlatch':   basic latch — arcilator: llhd.constant_time legalization failure
+    # 'dlatchsr': latch with set/reset — arcilator: llhd.constant_time legalization failure
 }
 
 CELLS_WITH_RESET = {
-    'adff',
-    'adffe',
-    'aldff',
-    'aldffe',
-    # 'dffsr',
-    # 'dffsre',
+    # adff/adffe/aldff/aldffe/dlatchsr: removed — async-reset cells disabled for arcilator
     'sdff',
     'sdffce',
     'sdffe',
-    'dlatchsr',
 }
 
 ALL_CELL_NAMES_TRANSMITTERS = set(ALL_CELL_PORTS.keys())
