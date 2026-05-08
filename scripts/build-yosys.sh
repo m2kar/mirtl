@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce the TransFuzz "MiRTL" Yosys build from upstream YosysHQ/yosys
-# pinned to commit 3c3788ee2 (Yosys 0.37+29) plus the TransFuzz overlay.
+# Build Yosys from the m2kar/mirtl-yosys fork (simufuzz branch).
 #
 # Usage:
 #   bash scripts/build-yosys.sh           # build only
@@ -14,8 +13,6 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 YOSYS="$ROOT/yosys"
-OVERLAY="$ROOT/yosys-overlay"
-PIN="3c3788ee2"
 JOBS="${JOBS:-$(nproc)}"
 
 if [ ! -e "$YOSYS/.git" ]; then
@@ -23,17 +20,7 @@ if [ ! -e "$YOSYS/.git" ]; then
     exit 1
 fi
 
-echo ">>> Resetting $YOSYS to upstream commit $PIN"
-git -C "$YOSYS" fetch --tags --quiet origin || true
-git -C "$YOSYS" reset --hard "$PIN"
-git -C "$YOSYS" clean -fdx
-
-echo ">>> Applying TransFuzz overlay"
-git -C "$YOSYS" apply --whitespace=nowarn "$OVERLAY/kernel-rtlil.patch"
-mkdir -p "$YOSYS/passes/simufuzz"
-cp -f "$OVERLAY"/passes/simufuzz/* "$YOSYS/passes/simufuzz/"
-
-echo ">>> Building Yosys with $JOBS jobs"
+echo ">>> Building Yosys with $JOBS jobs (mirtl-yosys fork)"
 make -C "$YOSYS" -j"$JOBS"
 
 echo
